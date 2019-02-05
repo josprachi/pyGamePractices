@@ -5,17 +5,17 @@ import pygame
 class Player(pygame.sprite.Sprite):
     WHITE = (255, 255, 255)
     YELLOW = (255, 255, 0)
-    width = 50
-    height = 50
-    def __init__(self, points=0,spriteSet=None):
+    BLACK=(0, 0, 0)
+    
+    def __init__(self, texture,points = 0,spriteSet = None, width = 1, height = 1):
 
         super(Player,self).__init__()
         
-        self.image = pygame.Surface([self.width, self.height])
+        #self.image = pygame.Surface([width,height])
         
-        self.image.fill(self.WHITE)
-        self.image.set_colorkey(self.WHITE)
-        pygame.draw.rect(self.image, self.YELLOW, [0, 0, self.width, self.height])
+        self.image=texture
+        #self.image.set_colorkey(self.WHITE)
+        pygame.draw.rect(self.image, self.BLACK, [0, 0, width, height])
         self.rect = self.image.get_rect()
 
         self.wepons=wepons
