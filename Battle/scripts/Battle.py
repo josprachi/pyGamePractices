@@ -7,6 +7,8 @@ from Dice import Dice
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 YELLOW = (255, 255, 0)
+
+num_chances=3#for now this will come through config file later
 #MrBlue_Texture=pygame.Surface([1,1]) 
 #MrRed_Texture=pygame.Surface([1,1]) 
 DiceTextures=[]
@@ -32,8 +34,9 @@ DiceTextures.append(pygame.image.load(os.path.abspath(imgRes["dice4Dot"])))
 DiceTextures.append(pygame.image.load(os.path.abspath(imgRes["dice5Dot"])))
 DiceTextures.append(pygame.image.load(os.path.abspath(imgRes["dice6Dot"])))
 
+RedDiceResults=[]
+BlueDiceResults=[]    
 
-    
 clock = pygame.time.Clock()
 crashed = False
 #print(os.path.abspath("../res"))
@@ -46,6 +49,8 @@ basicFont = pygame.font.SysFont(None, 48)
 MrBlue = Player(MrBlue_Texture)
 MrBlue.rect.x=100
 MrBlue.rect.y=100
+
+
 
 MrRed = Player(MrRed_Texture)
 MrRed.rect.x=300
@@ -68,11 +73,24 @@ all_Dice_list.add(DiceRed)
 all_Dice_list.add(DiceBlue)
 gameDisplay.fill(BLACK)
 
+
 while not crashed:
 
     for event in pygame.event.get():
+        
+        if event.type == pygame.KEYUP:
+            print("Here")
+            RedDiceResults = DiceRed.roll(1)
+            BlueDiceResults = DiceBlue.roll(1)    
+            for i in RedDiceResults:
+                if RedDiceResults[i]>BlueDiceResults[i]:
+                    print("Red Wins")
+                else:
+                    print("Blue Wins")
+
         if event.type == pygame.QUIT:
             crashed = True
+
 
         #print(event)
 

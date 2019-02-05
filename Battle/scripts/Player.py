@@ -21,6 +21,16 @@ class Player(pygame.sprite.Sprite):
         self.wepons=wepons
         self.points=points
 
+        '''self.font = pygame.font.SysFont("Arial", 30)
+        self.textSurf = self.font.render("Hello", 1, self.WHITE)
+        self.textSurf2 = self.font.render("world", 1, self.WHITE)
+        #self.image = pygame.Surface((width, height))
+        W = self.textSurf.get_width()
+        H = self.textSurf.get_height()
+        print(W,H)
+        self.image.blit(self.textSurf, [100, 100])
+        self.image.blit(self.textSurf2, [300, 300])'''
+
     def calculatePoints(self):
         self.points=0      
         for i in self.wepons:
