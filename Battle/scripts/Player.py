@@ -26,10 +26,11 @@ class Player(pygame.sprite.Sprite):
         self.points=0      
         for i in self.wepons:
             self.points+=self.wepons[i]
-        print(self,"Current Available Points=>", self.points)
+        return self.points    
+        #print(self,"Current Available Points=>", self.points)
 
     def removeWepon(self, weponName):
-        print(weponName,"this is wepon to be removed")
+        #print(weponName,"this is wepon to be removed")
         self.wepons[weponName]=0#just to make sure the wepon is removed from displayd list and does not have any value
 
     def getAvailableWepons(self):
@@ -44,11 +45,11 @@ if __name__ == "__main__":
     p2=Player()
     p1.calculatePoints()
     p2.calculatePoints()
-    print(p2.getAvailableWepons())
+    #print(p2.getAvailableWepons())
     p2.removeWepon("Dagger")
     p2.calculatePoints()
-    print(p2.getAvailableWepons())
+    #print(p2.getAvailableWepons())
     p2.removeWepon("Sward")
     p2.calculatePoints()
-    print(p2.getAvailableWepons())
+    #print(p2.getAvailableWepons())
     p2.calculatePoints()
