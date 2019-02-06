@@ -1,0 +1,5 @@
+No of Chances= 3
+ chance=> 3  Dice Blue: 3  Dice Red: 3 Mr Blue Scored: 67 and Mr Red Scored: 67 its a tie 
+ chance=> 2  Dice Blue: 3  Dice Red: 4 Mr Blue Scored: 52 and Mr Red Scored: 67 winner is Mr Red
+ chance=> 1  Dice Blue: 5  Dice Red: 5 Mr Blue Scored: 32 and Mr Red Scored: 47 winner is Mr Red
+ overall winner is Mr Red

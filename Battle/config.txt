@@ -1,5 +1,5 @@
 [Assignment]
 windowWidth = 800
 windowHeight = 600
-num_Chances=13
-mode="auto"
+num_Chances=3
+mode="user_Input"
