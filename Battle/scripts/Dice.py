@@ -1,10 +1,11 @@
-import pygame, random,os
+import pygame, random,os,time
 #from GameResources import imgRes
 
 class Dice(pygame.sprite.Sprite):
     NUM_FACES = 6
     index=0
     BLACK=(0, 0, 0)
+    clock = pygame.time.Clock()
     def __init__(self, textures=None, width = 1, height = 1, index = 0):
         super(Dice,self).__init__()
         self.index=index
@@ -24,6 +25,7 @@ class Dice(pygame.sprite.Sprite):
         if(self.index>=5):
             self.index=0
         self.image=self.images[self.index]
+        self.clock.tick(30)
 
     def showValue(self,valueIndex):
         self.index=valueIndex

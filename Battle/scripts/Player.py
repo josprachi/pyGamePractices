@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
     YELLOW = (255, 255, 0)
     BLACK=(0, 0, 0)
     
-    def __init__(self, texture,points = 0,spriteSet = None, width = 1, height = 1):
+    def __init__(self, texture,points = 0,spriteSet = None, width = 1, height = 1,id=None):
 
         super(Player,self).__init__()
         
@@ -17,19 +17,10 @@ class Player(pygame.sprite.Sprite):
         #self.image.set_colorkey(self.WHITE)
         pygame.draw.rect(self.image, self.BLACK, [0, 0, width, height])
         self.rect = self.image.get_rect()
-
-        self.wepons=wepons
+        
+        self.wepons=wepons.copy()
         self.points=points
-
-        '''self.font = pygame.font.SysFont("Arial", 30)
-        self.textSurf = self.font.render("Hello", 1, self.WHITE)
-        self.textSurf2 = self.font.render("world", 1, self.WHITE)
-        #self.image = pygame.Surface((width, height))
-        W = self.textSurf.get_width()
-        H = self.textSurf.get_height()
-        print(W,H)
-        self.image.blit(self.textSurf, [100, 100])
-        self.image.blit(self.textSurf2, [300, 300])'''
+        self.id=id
 
     def calculatePoints(self):
         self.points=0      
@@ -38,6 +29,7 @@ class Player(pygame.sprite.Sprite):
         print(self,"Current Available Points=>", self.points)
 
     def removeWepon(self, weponName):
+        print(weponName,"this is wepon to be removed")
         self.wepons[weponName]=0#just to make sure the wepon is removed from displayd list and does not have any value
 
     def getAvailableWepons(self):

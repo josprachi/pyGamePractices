@@ -18,5 +18,6 @@ weponType={"Dagger":2,
         "Pistol":8,
         "Rifle":15,
         "Sniper":20,
-        "shotGun":25
+        "ShotGun":25
     }
+weponsList=["Dagger","Sward","Pistol","Rifle","Sniper","ShotGun"]    
