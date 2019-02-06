@@ -2,13 +2,13 @@ import pygame, random, time, os, configparser,sys
 from Player import Player
 from GameResources import imgRes,weponsList
 from Dice import Dice
-
+from Menu import Button
 outputFile="../tests/output.txt"
 configFile="../tests/config.txt"
 
 class GameScene:
-    windowWidth = 800
-    windowHeight = 600
+    windowWidth = 0
+    windowHeight = 0
     BLACK = (0,0,0)
     WHITE = (255,255,255)
     YELLOW = (255, 255, 0)
@@ -25,7 +25,11 @@ class GameScene:
     def __init__(self ,config=None):
 
         self.num_chances=int(config.get("Assignment","num_Chances"))
-        #print("num chances",self.num_chances)
+        self.mode=str(config.get("Assignment","mode"))
+        self.windowHeight=int(config.get("Assignment","windowHeight"))
+        self.windowWidth=int(config.get("Assignment","windowWidth"))
+
+
         self._running = True
         self._gameOver = False
         self._display_surf = None 
@@ -37,6 +41,8 @@ class GameScene:
         self.MrBlueWepons=[]  
         self.redPoints=0
         self.bluePoints=0 
+
+        self.outputToWrite="No of Chances= "+str(self.num_chances)
         
     #initialize the game 
     def on_init(self):
@@ -65,14 +71,20 @@ class GameScene:
         self.DiceTextures.append(pygame.image.load(os.path.abspath(imgRes["dice5Dot"])))
         self.DiceTextures.append(pygame.image.load(os.path.abspath(imgRes["dice6Dot"])))
 
+        self.saveBtnTexture=pygame.image.load(os.path.abspath(imgRes["savebtn"]))
+
     def initScene(self):
 
         self.MrRed = Player(self.MrRed_Texture,id="MrRed")
         self.MrBlue = Player(self.MrBlue_Texture,id="MrBlue")
-         
+
+        self.SaveBtn=Button(self.saveBtnTexture)
+        
 
         self.all_sprites_list = pygame.sprite.Group()
+
         self.all_Dice_list = pygame.sprite.Group() 
+
         self.weponFont = pygame.font.SysFont(None, 32) 
 
         for i in weponsList:#self.MrBlue.wepons:
@@ -85,6 +97,8 @@ class GameScene:
         self.RedPointText=self.weponFont.render(str(self.MrRed.calculatePoints()),1,self.RED)
         self.BluePointText=self.weponFont.render(str(self.MrBlue.calculatePoints()),1,self.BLUE)
 
+        self.NumChancesText=self.weponFont.render(str(self.num_chances), 1, self.YELLOW)
+
         self.DiceRed = Dice(self.DiceTextures)
         self.DiceBlue= Dice(self.DiceTextures)
 
@@ -95,9 +109,12 @@ class GameScene:
         self.setSpritePosition(self.MrRed,[self.windowWidth/2,self.windowHeight/4])
         self.setSpritePosition(self.DiceBlue,[self.windowWidth/2-(self.MrBlue.rect.width*1.25),self.windowHeight/2])
         self.setSpritePosition(self.DiceRed,[self.windowWidth/2,self.windowHeight/2])
+
+        self.setSpritePosition(self.SaveBtn,[self.windowWidth/4-(self.SaveBtn.rect.width*1.25),self.windowHeight*3/4])
        
         self.all_sprites_list.add(self.MrBlue)
         self.all_sprites_list.add(self.MrRed)
+        self.all_sprites_list.add(self.SaveBtn)
         self.all_Dice_list.add(self.DiceRed)
         self.all_Dice_list.add(self.DiceBlue)
 
@@ -111,12 +128,16 @@ class GameScene:
         self.all_sprites_list.update()            
         self.all_Dice_list.update()
 
-        if self.num_chances==0:
+        self.redPoints=self.MrRed.calculatePoints()
+        self.bluePoints=self.MrBlue.calculatePoints()
+
+        if self.num_chances==0 or self.detectAnybodyLostAllWepons():
             self._gameOver = True
             self._startLoop = False
             self.calculateResults()
 
-        if self._gameOver == False  and self._startLoop == True: 
+        if self._gameOver == False  and self._startLoop == True:
+            
             if self._rolling_dice==False:
 
                 self.timer+=self.clock.get_time()                
@@ -133,10 +154,16 @@ class GameScene:
                 self._running = False
                 exit()
 
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                self._startLoop=True
-                self.timer=0
-                self.RollDices(num_chances=self.num_chances)           
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:             
+                if self._gameOver:
+                    x,y=event.pos
+                    print(x,y)
+                    if self.SaveBtn.rect.collidepoint(x,y):
+                        self.writeResultToFile()
+                else:
+                    self._startLoop=True
+                    self.timer=0
+                    self.RollDices(num_chances=self.num_chances)           
                     
         pass
              
@@ -150,9 +177,14 @@ class GameScene:
             #time.sleep(1.5)
             self.DoAction(self.MrBlue,self.RedDiceResults[self.num_chances-1])
             self.DoAction(self.MrRed,self.BlueDiceResults[self.num_chances-1])
-            
+
+            self.redPoints=self.MrRed.calculatePoints()
+            self.bluePoints=self.MrBlue.calculatePoints()
+            #self.outputToWrite+= "\n chance=> "+ str(self.num_chances)+"  Dice Blue: "+str(self.BlueDiceResults[self.num_chances-1])+"  Dice Red: "+str(self.RedDiceResults[self.num_chances-1])+" Mr Blue Scored: "+ str(self.bluePoints)+" and Mr Red Scored: "+str(self.redPoints)
+            self.generateOutput()
             self.num_chances-=1
             self.timer=0
+            
             
 
     def animateDices(self):
@@ -178,35 +210,81 @@ class GameScene:
         self.renderWepons(self.MrBlue,self.MrBlueWepons,self.BlueXPos)
         self.renderWepons(self.MrRed,self.MrRedWepons,self.RedXPos)
 
+        self.RedPointText=self.weponFont.render(str(self.redPoints),1,self.RED)
+        self.BluePointText=self.weponFont.render(str(self.bluePoints),1,self.BLUE)
 
-        self.RedPointText=self.weponFont.render(str(self.MrRed.calculatePoints()),1,self.RED)
-        self.BluePointText=self.weponFont.render(str(self.MrBlue.calculatePoints()),1,self.BLUE)
-        self._display_surf.blit(self.RedPointText,(self.windowWidth/3, self.windowHeight/8))
-        self._display_surf.blit(self.BluePointText,(self.windowWidth*2/3, self.windowHeight/8))
+        self._display_surf.blit(self.RedPointText,(self.windowWidth*2/3, self.windowHeight/8))
+        self._display_surf.blit(self.BluePointText,(self.windowWidth/3, self.windowHeight/8))
+
+        self.NumChancesText=self.weponFont.render("Remainig rolls: "+str(self.num_chances),1,self.YELLOW)
+        self._display_surf.blit(self.NumChancesText,(self.windowWidth/4, self.windowHeight*4/5))
+        
 
         self.all_Dice_list.draw(self._display_surf)  
 
         if self._gameOver:            
-            self._display_surf.blit(self.ResultText,(self.windowWidth/3, self.windowHeight*7/8))
+            self._display_surf.blit(self.ResultText,(self.windowWidth/4, self.windowHeight*7/8))
         else:
              self._display_surf.blit(self.RollButton,(self.windowWidth/3, self.windowHeight*7/8))
 
 
         pygame.display.update()
         self.clock.tick(60)
-        pygame.display.flip()    
-    
+        pygame.display.flip() 
+
+
+    def detectAnybodyLostAllWepons(self):        
+        if self.bluePoints<2 or self.redPoints<2:
+            return True
+        else:
+            return False    
+
     def calculateResults(self):
-        self.redPoints=self.MrRed.calculatePoints()
-        self.bluePoints=self.MrBlue.calculatePoints()
+        
         if self.redPoints!=self.bluePoints:
             if self.redPoints>self.bluePoints:
-                self.ResultText=self.weponFont.render(" Red Wins ",1,self.YELLOW)
+                self.ResultText=self.weponFont.render("Mr Red Wins ",1,self.YELLOW)
+                return 1
             else:
-                self.ResultText=self.weponFont.render(" Blue Wins ",1,self.YELLOW)  
+                self.ResultText=self.weponFont.render("Mr Blue Wins ",1,self.YELLOW)
+                return 0  
         else:
-            self.ResultText=self.weponFont.render(" Its a Tie ",1,self.YELLOW)          
+            self.ResultText=self.weponFont.render(" Its a Tie ",1,self.YELLOW)
+            return None          
 
+
+    def renderInput(self):
+        print("this is to take input from user")
+
+    def generateOutput(self):
+        i= self.calculateResults()
+        if self._gameOver:
+            self.outputToWrite+="\n "
+        else:        
+            self.outputToWrite+= "\n chance=> "+ str(self.num_chances)
+            self.outputToWrite+="  Dice Blue: "+str(self.BlueDiceResults[self.num_chances-1])+"  Dice Red: "+str(self.RedDiceResults[self.num_chances-1])
+            self.outputToWrite+=" Mr Blue Scored: "+ str(self.bluePoints)+" and Mr Red Scored: "+str(self.redPoints)
+
+        self.outputToWrite+="  winner is "
+        if i == 1:
+            self.outputToWrite+="Mr Red"
+        elif i==0:
+            self.outputToWrite+="Mr Blue "
+        else:
+            self.outputToWrite+="its a tie " 
+       
+
+       
+    def writeResultToFile(self):
+        self.generateOutput()
+        #print("This prints result of the game into output file")
+        file_path=os.path.abspath(outputFile)
+        if os.path.exists(file_path):
+            f = open(file_path, "w")
+            f.write(self.outputToWrite)
+        else:
+            f = open(file_path, "w")
+            f.write(self.outputToWrite)    
 
     def renderWepons(self,player,weponlist,xPos):
         counter=0
@@ -217,6 +295,7 @@ class GameScene:
 
 
     def on_cleanup(self):
+        
         pygame.quit()
  
       
@@ -242,9 +321,7 @@ class GameScene:
 
 if __name__ == "__main__" :
     
-    config = configparser.ConfigParser()
-    
-    config.read(os.path.abspath(configFile))
-   
+    config = configparser.ConfigParser()    
+    config.read(os.path.abspath(configFile))   
     mainGame = GameScene(config)
     mainGame.on_execute()

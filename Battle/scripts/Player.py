@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
     YELLOW = (255, 255, 0)
     BLACK=(0, 0, 0)
     
-    def __init__(self, texture,points = 0,spriteSet = None, width = 1, height = 1,id=None):
+    def __init__(self, texture,points = 0, width = 1, height = 1,id=None):
 
         super(Player,self).__init__()
         

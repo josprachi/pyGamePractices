@@ -1,2 +1,5 @@
 [Assignment]
-num_Chances=5
+windowWidth = 800
+windowHeight = 600
+num_Chances=13
+mode="auto"
