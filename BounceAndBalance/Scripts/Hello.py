@@ -1,4 +1,15 @@
 import pygame
+import time
+from pygame.locals import *
+from random import randint
+
+
+class App:
+    #these will go into game assets whichare never going to be changed
+    pg_WinHeight=800
+    pg_WinWidth=600
+    pg_GameCaption="GameName"
+
 pygame.init()
 gameDisplay = pygame.display.set_mode((800,600))
 pygame.display.set_caption('Hello World')
