@@ -25,6 +25,7 @@ class GameScene:
         self.num_chances=int(config.get("Assignment","num_Chances"))
         print("num chances",self.num_chances)
         self._running = True
+        self._gameOver = False
         self._display_surf = None       
         self.RedDiceResults=[]
         self.BlueDiceResults=[]
@@ -67,10 +68,11 @@ class GameScene:
         self.weponFont = pygame.font.SysFont(None, 32) 
 
         for i in self.MrBlue.wepons:
-            self.MrRedWepons.append(self.weponFont.render(str(i), 1, (255,255,255)))
-            self.MrBlueWepons.append(self.weponFont.render(str(i), 1, (255,255,255)))   
+            self.MrRedWepons.append(self.weponFont.render(str(i), 1, self.WHITE))
+            self.MrBlueWepons.append(self.weponFont.render(str(i), 1, self.WHITE))   
              
-        self.RollButton=self.weponFont.render("Click anywhere to roll Dice", 1, (255,0,255))
+        self.RollButton=self.weponFont.render("Click anywhere to roll Dice", 1, self.YELLOW)
+        self.ResultText=self.weponFont.render(" ",1,self.YELLOW)
 
         self.DiceRed = Dice(self.DiceTextures)
         self.DiceBlue= Dice(self.DiceTextures)
@@ -98,12 +100,15 @@ class GameScene:
                 exit()
 
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                self.RollDices(self.num_chances)               
-                self.DoAction(self.MrBlue,self.RedDiceResults)
-                self.DoAction(self.MrRed,self.BlueDiceResults)              
+                if self._gameOver == False:
+                    self.RollDices(self.num_chances)
+                    self.DoAction(self.MrBlue,self.RedDiceResults)
+                    self.DoAction(self.MrRed,self.BlueDiceResults)
+                    if self.num_chances==0:
+                        self._gameOver = True              
 
         self.all_sprites_list.update()
-        #self.DiceBlue.animate_roll()       
+            
         self.all_Dice_list.update()
         pass
  
@@ -123,11 +128,15 @@ class GameScene:
         self.all_sprites_list.draw(self._display_surf)
 
         self.renderWepons(self.MrBlue,self.MrBlueWepons,self.BlueXPos)
-        self.renderWepons(self.MrRed,self.MrRedWepons,self.RedXPos)            
+        self.renderWepons(self.MrRed,self.MrRedWepons,self.RedXPos)
+        self.all_Dice_list.draw(self._display_surf)  
 
-        self._display_surf.blit(self.RollButton,(self.windowWidth/3, self.windowHeight*7/8))
+        if self._gameOver:            
+            self._display_surf.blit(self.ResultText,(self.windowWidth/3, self.windowHeight*7/8))
+        else:
+             self._display_surf.blit(self.RollButton,(self.windowWidth/3, self.windowHeight*7/8))
 
-        self.all_Dice_list.draw(self._display_surf)        
+
         pygame.display.update()
         self.clock.tick(60)
         pygame.display.flip()    
