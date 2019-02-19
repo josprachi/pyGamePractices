@@ -100,6 +100,8 @@ class App:
  
     def on_init(self):
         pygame.init()
+        gameIcon = pygame.image.load('block.png')
+        pygame.display.set_icon(gameIcon)
         self._display_surf = pygame.display.set_mode((self.windowWidth,self.windowHeight), pygame.HWSURFACE)
  
         pygame.display.set_caption('Pygame pythonspot.com example')
