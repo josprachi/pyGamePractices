@@ -5,8 +5,8 @@
 ## Installation
 
 ```bash
-$ unzip Blttle.zip
-$ cd Battle
+$ tar -xvf Battle.tar.gz
+$ cd Battle/
 $ pip install -r requirements.txt
 ```
 
