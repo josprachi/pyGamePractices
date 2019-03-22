@@ -1,4 +1,5 @@
 import pygame
+import time
 from pygame.locals import *
 
 winWidth=600
@@ -7,6 +8,7 @@ color_CYAN=(0,255,255)
 color_BLACK=(0,0,0)
 bkgs=[]
 bkg_texture_str="gameBkg.png"
+shipAnimFrames_str=["ripple0.png","ripple1.png","ripple2.png","ripple3.png","ripple4.png"]
 all_sprites_list = pygame.sprite.Group()
 clock = pygame.time.Clock()
 class GameScene:
@@ -74,27 +76,29 @@ class Ship(pygame.sprite.Sprite):
 		#self.image.set_colorkey(self.WHITE)
 		self.x=x
 		self.y=y
-		self.width=width
-		self.height=height
 		self.rect = self.image.get_rect()
+		self.width=self.rect.width
+		self.height=self.rect.height
+		
 
 	def update(self):
 		if self.isAnimating:
 			self.animate()
-		print("update")
+		
 	def draw(self,surface):
-		self.image.blit(self.currentFrame,self.rect.midtop)
-		surface.blit(self.image,(self.x,self.y))	
+		surface.blit(self.currentFrame,(self.x-self.width,self.y-self.height*0.2))
+		#pygame.display.flip()
+		surface.blit(self.image,((self.x),(self.y)))	
 	def startAnimation(self):
 		self.isAnimating=True
-		print("startAnimation")
+		
 	def animate(self):
 		self.index+=1
-		if(self.index>5):
+		if(self.index>=len(self.animFrames)):
 			self.index=0
 		self.currentFrame=self.animFrames[self.index]
-		time.sleep(0.05)
-		print("Animate")
+		time.sleep(0.01)
+		
 	def stopAnimation(self):
 		self.isAnimating=False
 		print("stop animation")		
@@ -103,7 +107,7 @@ class Ship(pygame.sprite.Sprite):
 if __name__=="__main__":
 	pygame.init()
 
-	caption="Image Test"
+	caption="Endless Travel"
 	pygame.display.set_caption(caption)
 
 	ship= pygame.image.load("ship.png")
@@ -115,19 +119,30 @@ if __name__=="__main__":
 	bush=pygame.transform.scale((pygame.image.load("bush.png")),(50,50))
 	
 	bushes=[]
+	shipAnimFrames=[]
 	i=0
 	while i<5:
 		bushes.append(bush.copy())
 		i+=1
+
+	i=0
+	while i<len(shipAnimFrames_str):
+		shipAnimFrames.append((pygame.image.load(shipAnimFrames_str[i])))
+		i += 1
 
 	bkg_texture=pygame.transform.scale((pygame.image.load(bkg_texture_str)),(winWidth,winHeight))	
 	BkgSprite1 = Background(bkg_texture,bushes,0,winHeight*(-1))
 	BkgSprite2 = Background(bkg_texture,bushes,0,0)
 	BkgSprite3 = Background(bkg_texture,bushes,0,winHeight)
 
+	ShipSprite = Ship(ship,shipAnimFrames,winWidth*0.45,winHeight*0.75)
+	ShipSprite.startAnimation()
+
+
 	all_sprites_list.add(BkgSprite1)
 	all_sprites_list.add(BkgSprite2)
 	all_sprites_list.add(BkgSprite3)
+	all_sprites_list.add(ShipSprite)
 	while True:
 		for event in pygame.event.get():
 			if event.type==QUIT:
@@ -139,6 +154,7 @@ if __name__=="__main__":
 		BkgSprite1.draw(Game_Window)
 		BkgSprite2.draw(Game_Window)
 		BkgSprite3.draw(Game_Window)
+		ShipSprite.draw(Game_Window)
 		#Game_Window.blit(ship,(winWidth*0.45,winHeight*0.25))
 		clock.tick(60)
 		pygame.display.flip()        
