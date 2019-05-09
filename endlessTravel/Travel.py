@@ -11,6 +11,9 @@ bkg_texture_str="gameBkg.png"
 shipAnimFrames_str=["ripple0.png","ripple1.png","ripple2.png","ripple3.png","ripple4.png"]
 all_sprites_list = pygame.sprite.Group()
 clock = pygame.time.Clock()
+
+
+
 class GameScene:
 	def __init__(self ,config=None,mode=None):
 		print("init")
@@ -63,6 +66,10 @@ class Background(pygame.sprite.Sprite):
 			i+=1
 
 
+class Obstacle(pygame.sprite,Sprite):
+	def __init__(self, texture):
+		super(Obstacle,self).__init__()
+		self.image=texture
 
 class Ship(pygame.sprite.Sprite):
 	index=0
